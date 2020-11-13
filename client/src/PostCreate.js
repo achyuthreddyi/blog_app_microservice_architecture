@@ -10,7 +10,7 @@ export default () => {
     await axios.post('http://localhost:4000/posts', {
       title
     });
-
+    console.log("coming after the request");
     setTitle('');
   };
 
