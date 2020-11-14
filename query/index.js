@@ -1,5 +1,6 @@
 const express = require('express')
 const cors = require('cors')
+const axios = require('axios')
 
 const app = express()
 
@@ -11,26 +12,7 @@ app.use(cors())
 
 const posts = {}
 
-// example
-// posts === {
-// 	'sfla89':{
-// 		id: 'sfla89',
-// 		title: 'post one',
-// 		comments: [
-// 			{id: '90gsdf', content: 'comment!'}
-// 		]
-// 	}    
-// }
-
-//routes
-app.get('/posts', (req, res) =>{
-	res.send(posts)
-
-})
-
-app.post('/events', (req, res) =>{
-	const { type, data } = req.body;
-
+const handleEvents = (type, data) =>{
 	if(type === 'PostCreated'){
 		const { id, title }  = data
 
@@ -55,8 +37,46 @@ app.post('/events', (req, res) =>{
 		comment.status = status
 		comment.content = content	
 	}
+}
+
+
+
+//routes
+app.get('/posts', (req, res) =>{
+	res.send(posts)
+
+})
+
+app.post('/events', (req, res) =>{
+	const { type, data } = req.body;
+	
+	handleEvents(type, data)
+
 	res.send({})
 })
 
 
-app.listen(4002,console.log(`query service app working on port 4003`))
+app.listen(4002, async () =>{
+	console.log(`query service app working on port 4002`)
+	const res = await axios.get('http://localhost:4005/events')
+
+	for(let event of res.data){
+		console.log('Processing events: ', event.type);
+		handleEvents(event.type, event.data)		
+	}
+})
+
+
+
+
+
+// example
+// posts === {
+// 	'sfla89':{
+// 		id: 'sfla89',
+// 		title: 'post one',
+// 		comments: [
+// 			{id: '90gsdf', content: 'comment!'}
+// 		]
+// 	}    
+// }
