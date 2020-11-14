@@ -11,7 +11,7 @@ app.post('/events', (req,res) =>{
     // what ever we get we need to send it to all the different services
     axios.post('http://localhost:4000/events', event)
     axios.post('http://localhost:4001/events', event)
-    //axios.post('http://localhost:4002/events') // probably to the query service
+    axios.post('http://localhost:4002/events', event) // probably to the query service
 
     res.send({ status: 'OK' })
 
